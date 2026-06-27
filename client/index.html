@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drowsiness Detection</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 16px;
+        }
+
+        h1 { color: #00ff88; letter-spacing: 3px; font-size: 1.3rem; }
+
+        .video-container {
+            position: relative;
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #video {
+            display: block;
+            width: 640px;
+            height: 480px;
+            transform: scaleX(-1); /* By default video generated is mirrored, so to make it look good we use this */
+        }
+
+        #canvas { display: none; } /* hidden — only MediaPipe reads this */
+
+        /* EAR badge — top left */
+        #ear-display {
+            position: absolute;
+            top: 12px; left: 12px;
+            background: rgba(0,0,0,0.75);
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            font-size: 1rem;
+        }
+        #ear-value { color: #00ff88; font-weight: bold; }
+
+        /* Frame counter badge — top right */
+        #counter-display {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: rgba(0,0,0,0.75);
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            font-size: 1rem;
+        }
+        #frame-count { color: #00ff88; font-weight: bold; }
+
+        /* No face warning */
+        #no-face {
+            display: none;
+            position: absolute;
+            bottom: 12px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,165,0,0.85);
+            color: #000;
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* WAKE UP overlay */
+        #alert-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #fff;
+            animation: pulse 0.5s infinite alternate;
+        }
+        #alert-overlay.active { display: flex; }
+
+        @keyframes pulse {
+            from { background: rgba(255,0,0,0.45); }
+            to   { background: rgba(255,0,0,0.75); }
+        }
+        .driver-id-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .driver-id-hint {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .driver-id-wrapper label {
+            font-size: 0.8rem;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        #driver-id-input {
+            width: 220px;
+            padding: 10px 14px;
+            background: #111;
+            color: #00ff88;
+            border: 1px solid #333;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-align: center;
+            outline: none;
+        }
+
+        #driver-id-input::placeholder {
+            color: #555;
+        }
+
+        #driver-id-input:focus {
+            border-color: #00ff88;
+        }
+        
+        #start-btn {
+            padding: 12px 40px;
+            background: #00ff88;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 2px;
+        }
+        #start-btn:hover    { background: #00cc6a; }
+        #start-btn:disabled { background: #333; color: #666; cursor: default; }
+
+        #status { font-size: 0.85rem; color: #888; }
+        #status.alert { color: #ff4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>DROWSINESS DETECTION</h1>
+
+    <div class="video-container">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" width="640" height="480"></canvas>
+
+        <div id="ear-display">EAR: <span id="ear-value">--</span></div>
+        <div id="counter-display">Frames: <span id="frame-count">0</span></div>
+
+        <div id="alert-overlay">⚠ WAKE UP! ⚠</div>
+        <div id="no-face">No face detected</div>
+    </div>
+
+    
+    <div class="driver-id-wrapper">
+        <label for="driver-id-input">DRIVER ID</label>
+        <input id="driver-id-input" type="text" placeholder="e.g. driver_001" />
+        <p class="driver-id-hint">Enter a Driver ID to enable START</p>
+    </div>
+
+    <button id="start-btn" disabled>START MONITORING</button>
+    <div id="status">Click START to begin.</div>
+
+    <!-- MediaPipe via CDN — no npm or install needed -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+
+    <!-- ear_calculator.js must load before app.js -->
+    <script src="/static/ear_calculator.js"></script>
+    <script src="/static/app.js"></script>
+
+</body>
+</html>

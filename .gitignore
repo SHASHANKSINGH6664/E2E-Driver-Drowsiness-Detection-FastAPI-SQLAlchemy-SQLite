@@ -1,0 +1,18 @@
+﻿# Database file - contains real driver data
+*.db
+
+# Environment variables - may contain passwords later
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+env/
+
+# OS files
+.DS_Store
+Thumbs.db
