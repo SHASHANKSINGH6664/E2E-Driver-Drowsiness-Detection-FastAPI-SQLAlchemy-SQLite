@@ -67,7 +67,9 @@ uvicorn main:app --reload
 | POST   | `/api/v1/log-alert`     | Receives and stores a drowsiness alert       |
 | GET    | `/health`               | Health check                                 |
 
-#These are not implemented in current project, but can be used to extend the project
+# These are not implemented in current project, but can be used to extend the project
+| Method | Endpoint                | Description                                  |
+|--------|--------------------------|-----------------------------------------------|
 | GET    | `/api/v1/alerts`        | Returns all alerts (filter by `?driver_id=`) |
 | GET    | `/api/v1/alerts/{id}`   | Returns a single alert by ID                 |
 
